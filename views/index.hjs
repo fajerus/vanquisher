@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+
+    <link rel='stylesheet' href='/assets/vis/dist/vis.min.css'>
+    <link rel='stylesheet' href='/assets/vis/dist/vis-timeline-graph2d.min.css'>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+
+
+    <div id="app">
+      <table border="1">
+        <tr v-for="row in groups">
+          <td v-html="row.users.join('<br>')"></td>
+        </tr>
+      </table>
+      <hr>
+      <div id="visualization"></div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.1/moment-with-locales.min.js"></script>
+    <script src="/assets/vis/dist/vis.js"></script>
+    <script src="/assets/vue/dist/vue.js"></script>
+
+
+
+    <script type="text/javascript">
+
+    var app = new Vue({
+      el: '#app',
+      data: {
+        tasks: [
+          // {id: 1, content: 'Аттестация Мифтахова', start: '2019-01-21', end: '2019-01-25', group: 7, type: 'range', style: "background-color: #40BF6A;"},
+          // {id: 2, content: 'Студенец, АСУ,', start: '2019-02-11', end: '2019-02-15', group: 7, type: 'range', style: "background-color: #ABB83D;"},
+          // {id: 3, content: 'Сюмси, АСУ', start: '2019-01-14', end: '2019-01-18', group: 7, type: 'range', style: "background-color: #A137A4;"},
+          // {id: 4, content: 'Диагностика Прикамье', start: '2019-02-25', end: '2019-03-07', group: 7, type: 'range', style: "background-color: #CC66AD;"},
+       
+          { id: 5,  content: 'НПС Белая автоматика', start: '2019-03-05', end: '2019-09-15', group: 7, type: 'background', style: "background-color: #40BF6A;" },
+          { id: 6,  content: 'Договорные сроки проведения раобот', start: '2019-03-05', end: '2019-09-13', group: 7, type: 'range', style: "background-color: #ABB83D;" },
+          { id: 7,  content: 'Договорные сроки сдачи технических отчетов', start: '2019-05-30', end: '2019-09-14', group: 7, type: 'range', style: "background-color: #CC66AD;" },
+          { id: 8,  content: 'Допуск ', start: '2019-03-10', end: '2019-03-14', group: 7, type: 'range', style: "background-color: blue" },
+          { id: 9,  content: 'Работа',  start: '2019-03-15', end: '2019-04-15', group: 7, type: 'range', style: "background-color: yellow;" },
+          { id: 10, content: 'Отчет',   start: '2019-09-14', group: 7, type: 'point', style: "background-color: red;" },
+        ],
+        groups: [
+          { id: 1, content: '1', users: [ "Аглямов", "Малинкин", "Студент", "Мифтахов", "Эдик" ] },
+          { id: 2, content: '2', users: [ "Аглямов", "Булат" ] },
+          { id: 3, content: '3', users: [ "Просвирнин", "Малинкин", "Глейзер" ] },
+          { id: 4, content: '4', users: [ "Нияз", "Ильдар" ] },
+          { id: 5, content: '5', users: [ "Неклюдов", "Гарифзянов" ] },
+          { id: 6, content: '6', users: [ "Просвирнин", "Студент" ] },
+          { id: 7, content: '6', users: [ "Саша", "Антон" ] },
+        ]
+      },
+      mounted: function() {
+        var vm = this
+        // DOM element where the Timeline will be attached
+        var container = document.getElementById('visualization');
+
+        // Create a DataSet (allows two way data-binding)
+        var items = new vis.DataSet(vm.tasks)
+        var groups = new vis.DataSet(vm.groups)
+        // Configuration for the Timeline
+        var options = {
+          locale: "ru",
+          editable: true,
+          groupEditable: true,
+          groupTemplate: function(group){
+            container = document.createElement('div');
+          
+            group.users.forEach(function(element) {
+              brigada_user = document.createElement('p');
+              brigada_user.style.cssText = "font-size: 11px;"
+              brigada_user.innerHTML = element;
+              container.insertAdjacentElement('beforeend',brigada_user);
+            });
+           
+            return container;
+          },
+          
+          groupOrderSwap: function (a, b, groups) {
+            var v = a.value;
+            a.value = b.value;
+            b.value = v;
+          },
+            
+          onAdd: function (item, callback){
+            $('#exampleModalCenter').on('shown.bs.modal', function () {
+              $('.editor_input input[name=content]').val(item.content)
+            });
+            $('#exampleModalCenter').modal();
+            callback(item);
+          },
+          
+          onUpdate: function (item, callback) {
+            $('#exampleModalCenter').on('shown.bs.modal', function () {
+              $('.editor_input input[name=content]').val(item.content)
+            });
+            $('#exampleModalCenter').modal();
+            callback(item);
+          },
+          orientation: 'both',
+        }
+
+        // Create a Timeline
+        var timeline = new vis.Timeline(container);
+        timeline.setOptions(options);
+        timeline.setGroups(groups);
+        timeline.setItems(items);
+      }
+    })
+    </script>
+  </body>
+</html>
